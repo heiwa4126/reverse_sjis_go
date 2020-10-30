@@ -11,6 +11,6 @@ GoとRustで同じものを書くテスト。
 
 # TODO
 
-- testを追加。
+- ~~testを追加。~~
 - ~~fmt.Fprintfを除去~~
 - ~~もっとDIっぽく。~~
