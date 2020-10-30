@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"io"
 	"log"
 	"os"
@@ -23,13 +22,13 @@ func reverseString(s string) string {
 	return string(r)
 }
 
-func reverseSjis(in io.Reader, out io.Writer) (err error) {
-	s := bufio.NewScanner(transform.NewReader(in, japanese.ShiftJIS.NewDecoder()))
-	w := bufio.NewWriter(transform.NewWriter(out, japanese.ShiftJIS.NewEncoder()))
+func reverseFile(in io.Reader, out io.Writer) (err error) {
+	s := bufio.NewScanner(in)
+	w := bufio.NewWriter(out)
 	defer w.Flush()
 
 	for s.Scan() {
-		_, err = fmt.Fprintln(w, reverseString(s.Text()))
+		_, err = w.WriteString(reverseString(s.Text()) + "\n")
 		if err != nil {
 			return
 		}
@@ -38,8 +37,15 @@ func reverseSjis(in io.Reader, out io.Writer) (err error) {
 	return
 }
 
+func reverseSJIS(in io.Reader, out io.Writer) (err error) {
+	return reverseFile(
+		transform.NewReader(in, japanese.ShiftJIS.NewDecoder()),
+		transform.NewWriter(out, japanese.ShiftJIS.NewEncoder()),
+	)
+}
+
 func main() {
-	if err := reverseSjis(os.Stdin, os.Stdout); err != nil {
+	if err := reverseSJIS(os.Stdin, os.Stdout); err != nil {
 		log.Fatal(err)
 	}
 }
