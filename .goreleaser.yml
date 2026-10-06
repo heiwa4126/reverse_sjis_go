@@ -23,10 +23,9 @@ builds:
     ldflags:
       - -s -w
     hooks:
-        post:
-          upx
-            dist/reverse_sjis_go_linux_amd64/reverse_sjis_go
-            dist/reverse_sjis_go_windows_amd64/reverse_sjis_go.exe
+      post: upx
+        dist/reverse_sjis_go_linux_amd64/reverse_sjis_go
+        dist/reverse_sjis_go_windows_amd64/reverse_sjis_go.exe
 archives:
   - name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
     replacements:

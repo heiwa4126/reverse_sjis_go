@@ -1,0 +1,87 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+
+version: "3"
+
+vars:
+  GREETING: Hello, world!
+
+tasks:
+  default:
+    desc: Default task
+    cmds:
+      - task: run
+
+  hello:
+    desc: Print a greeting message
+    cmds:
+      - echo "{{.GREETING}}"
+    silent: true
+
+  run:
+    desc: Run the Go application
+    cmds:
+      - go run main.go
+
+  test:
+    desc: Run tests
+    cmds:
+      - go test ./...
+
+  test-race:
+    desc: Run tests with the race detector
+    cmds:
+      - go test -race ./...
+
+  coverage:
+    desc: Generate a coverage report
+    cmds:
+      - go test -coverprofile=coverage.out ./...
+      - go tool cover -func=coverage.out
+
+  tidy:
+    desc: Tidy and verify Go modules
+    cmds:
+      - go mod tidy
+      - go mod verify
+
+  check:
+    desc: Run checks used by CI
+    cmds:
+      - task: fmt-check
+      - task: lint
+      - task: test
+      - task: audit
+
+  fmt-check:
+    desc: Check that Go files are formatted
+    cmds:
+      - test -z "$(gofmt -l .)"
+
+  lint:
+    desc: Run linter on the Go code
+    cmds:
+      - go vet ./...
+      - golangci-lint run ./...
+
+  audit:
+    cmds:
+      - govulncheck -show verbose ./...
+
+  fmt:
+    desc: Format the Go code
+    cmds:
+      # - go fmt ./...
+      - goimports -w .
+      - oxfmt
+
+  update:
+    desc: Update dependencies and format the Go code
+    cmds:
+      - go get -u ./...
+      - task: tidy
+
+  build:
+    desc: Build the Go application
+    cmds:
+      - go build -o reverse_sjis_go -ldflags "-s -w" main.go
+      - upx reverse_sjis_go
